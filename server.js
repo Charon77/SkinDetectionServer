@@ -2,7 +2,7 @@ var express = require('express')
 var app = express()
 var multer  = require('multer')
 var exec = require('child_process').exec;
-
+var dgram = require('dgram')
 getTimeMSFloat = () => {
     const hrtime = process.hrtime();
     return ( hrtime[0] * 1000000 + hrtime[1] / 1000 );
@@ -33,3 +33,11 @@ app.listen(80, function () {
   console.log('Example app listening on port 3000!')
 })
 
+const server = dgram.createSocket('udp4');
+
+server.on('message', (msg, rinfo) => {
+  console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
+  server.send('SV', rinfo.port, rinfo.address)
+});
+
+server.bind(57700)
